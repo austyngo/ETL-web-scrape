@@ -2,6 +2,10 @@
 Creating dataset by navigating multiple pages to scrape data and load to SQL database
 
 ## [scrape_eth.py](https://github.com/austyngo/ETL-web-scrape/blob/master/scrape_eth.py)
+This script navigates the entire website to scrape company, brand, and category information and creates a dataframe.
+
+## [to_sql.py](https://github.com/austyngo/ETL-web-scrape/blob/master/to_sql.py)
+This script separates the scraped dataframe into brand, company, and catagory tables and creates unique identifiers for each table. The tables are then loaded into an existing SQL database using SQLalchemy.
 
 ### Logging in to a site
 Start a session.
