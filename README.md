@@ -33,7 +33,8 @@ r = session_requests.get(login_url)
 soup = BeautifulSoup(r.text, 'html.parser')
 ```
 
-Navigating a site. In this example, there is a page for each category of brands.
+### Navigating a site
+In this example, there is a page for each category of brands.
 ```python
 #create a list to store URLs
 cat_link=[]
