@@ -3,15 +3,13 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-# Start the session
-session_requests = requests.session()
-
 login_url = "https://www.ethicalconsumer.org/"
 
-user = #XXXXX
-password = #XXXXX
+user = 'XXXXX'
+password = 'XXXXX'
 
 def main():
+  # Start the session
   session_requests = requests.session()
 
   result = session_requests.get(login_url)
