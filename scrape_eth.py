@@ -107,4 +107,4 @@ def main():
 
 if __name__ == '__main__':
   data = main()
-  data.to_csv('lumo_data.csv')
+  data.to_csv('data.csv')
