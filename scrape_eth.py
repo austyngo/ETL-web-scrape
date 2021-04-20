@@ -5,10 +5,10 @@ import pandas as pd
 
 login_url = "https://www.ethicalconsumer.org/"
 
-user = 'XXXXX'
-password = 'XXXXX'
+user = 'XXXX'
+password = 'XXXX'
 
-def main():
+def session_():
   # Start the session
   session_requests = requests.session()
 
@@ -28,24 +28,26 @@ def main():
   # Post the payload to the site to log in
   s = session_requests.post(login_url, data=payload)
 
-  # Navigate to the next page and scrape the data
-  r = session_requests.get(login_url)
+  return session_requests
 
-  soup = BeautifulSoup(r.text, 'html.parser')
-
+def get_links(session):
   cat_link = []
 
+  # Navigate to the next page and scrape the data
+  r = session.get(login_url)
+  soup = BeautifulSoup(r.text, 'html.parser')
   #open category links
   ind = soup.find_all('a', class_='menu__link')
   for i in ind:
     cat_link.append('https://www.ethicalconsumer.org' + i['href'])
+  return cat_link
 
-  #create lists for each field to scrape
+def get_info(links, session):
   brand, company, comp_link, category, rating = [], [], [], [], []
   env, people, animals, pol = [], [], [], []
 
-  for cat in cat_link:
-    req = session_requests.get(cat)
+  for cat in links:
+    req = session.get(cat)
     sou = BeautifulSoup(req.text, 'html.parser')
     cat_name = sou.find('h1', class_='title')
     div = sou.find_all('div', class_='product-company')
@@ -74,67 +76,34 @@ def main():
     #find and open links containing ethical information for each brand
     ul = sou.find_all('ul', class_='points lost')
 
-    for u in ul:
-      env_rate = u.find('a', {'title': 'View environment-related stories for this company'})
-      if env_rate is None:
-        env.append('NA')
-      else:
-        env_url = 'https://www.ethicalconsumer.org' + env_rate['href']
-        env_req = session_requests.get(env_url)
-        envsoup = BeautifulSoup(env_req.text, 'html.parser')
-        envstory = envsoup.find_all('div', class_="field field--name-field-story-body field--type-text-with-summary field--label-hidden field--item")
-        env_list = []
-        for e in envstory:
-          env_list.append(e.text)
-        env.append('\b\b'.join(env_list))
-        print('\b\b'.join(env_list)) 
+    fields = ['View environment-related stories for this company', 'View people-related stories for this company', 'View animals-related stories for this company', 'View politics-related stories for this company']
 
-      people_rate = u.find('a', {'title': 'View people-related stories for this company'})
-      if people_rate is None:
-        people.append('NA')
-      else:
-        people_url = 'https://www.ethicalconsumer.org' + people_rate['href']
-        people_req = session_requests.get(people_url)
-        peoplesoup = BeautifulSoup(people_req.text, 'html.parser')
-        peoplestory = peoplesoup.find_all('div', class_="field field--name-field-story-body field--type-text-with-summary field--label-hidden field--item")
-        people_list = []
-        for e in peoplestory:
-          people_list.append(e.text)
-        people.append('\b\b'.join(people_list))
-        print('\b\b'.join(people_list))
-
-      animals_rate = u.find('a', {'title': 'View animals-related stories for this company'})
-      if animals_rate is None:
-        animals.append('NA')
-      else:
-        animals_url = 'https://www.ethicalconsumer.org' + animals_rate['href']
-        animals_req = session_requests.get(animals_url)
-        animalssoup = BeautifulSoup(animals_req.text, 'html.parser')
-        animalsstory = animalssoup.find_all('div', class_="field field--name-field-story-body field--type-text-with-summary field--label-hidden field--item")
-        animals_list = []
-        for e in animalsstory:
-          animals_list.append(e.text)
-        animals.append('\b\b'.join(animals_list))
-        print('\b\b'.join(animals_list))
-
-      pol_rate = u.find('a', {'title': 'View politics-related stories for this company'})
-      if pol_rate is None:
-        pol.append('NA')
-      else:
-        pol_url = 'https://www.ethicalconsumer.org' + pol_rate['href']
-        pol_req = session_requests.get(pol_url)
-        polsoup = BeautifulSoup(pol_req.text, 'html.parser')
-        polstory = polsoup.find_all('div', class_="field field--name-field-story-body field--type-text-with-summary field--label-hidden field--item")
-        pol_list = []
-        for e in polstory:
-          pol_list.append(e.text)
-        pol.append('\b\b'.join(pol_list))
-        print('\b\b'.join(pol_list))
+    for f, c in zip(fields,[env, people, animals, pol]):
+      for u in ul:
+        rate = u.find('a', {'title': f})
+        if rate is None:
+          env.append('NA')
+        else:
+          url = 'https://www.ethicalconsumer.org' + rate['href']
+          req = session.get(url)
+          envsoup = BeautifulSoup(req.text, 'html.parser')
+          story = envsoup.find_all('div', class_="field field--name-field-story-body field--type-text-with-summary field--label-hidden field--item")
+          r_list = []
+          for s in story:
+            r_list.append(s.text)
+          c.append('\b\b'.join(r_list))
+          print('\b\b'.join(r_list)) 
 
   #create dataframe from list store with scraped info
   df = pd.DataFrame({'Brand': brand, 'Company': company, 'Category': category, 'Rating': rating, 'Environment': env, 'People': people, 'Animals': animals, 'Politics': pol})
 
   return df
+
+def main():
+  site_session = session_()
+  links = get_links(site_session)
+  data = get_info(links, site_session)
+  return data 
 
 if __name__ == '__main__':
   data = main()
