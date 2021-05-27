@@ -1,4 +1,4 @@
-# ETL-web-scrape
+# Extracting Data with Web Scraping
 Creating dataset by navigating multiple pages to scrape data and load to SQL database
 
 ## [scrape_eth.py](https://github.com/austyngo/ETL-web-scrape/blob/master/scrape_eth.py)
