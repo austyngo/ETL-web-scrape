@@ -1,5 +1,5 @@
 # Extracting Data with Web Scraping
-Creating dataset by navigating multiple pages to scrape data and load to SQL database
+Creating dataset by navigating multiple pages to scrape data using beautifulsoup and loading to SQL database.
 
 ## [scrape_eth.py](https://github.com/austyngo/ETL-web-scrape/blob/master/scrape_eth.py)
 This script navigates the entire website to scrape company, brand, and category information and creates a dataframe.
